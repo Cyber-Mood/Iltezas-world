@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ilteza's World ✨</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Nunito:wght@300;400;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- CSS Variables --- */
+        :root {
+            --bg-color: #f0f8ff; 
+            --gradient: linear-gradient(135deg, #e0f7fa 0%, #fce4ec 100%); 
+            --text-main: #5a738e;
+            --text-muted: #8898aa;
+            --glass-bg: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --card-shadow: 0 8px 32px rgba(90, 115, 142, 0.1);
+            --accent: #ff8b94;
+        }
+
+        .sleep-mode {
+            --bg-color: #0f172a; 
+            --gradient: linear-gradient(135deg, #1e1b4b 0%, #312e81 100%); 
+            --text-main: #e2e8f0;
+            --text-muted: #cbd5e1;
+            --glass-bg: rgba(15, 23, 42, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --card-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+            --accent: #a78bfa; 
+        }
+
+        body { margin: 0; padding: 0; font-family: 'Nunito', sans-serif; background: var(--bg-color); background-image: var(--gradient); color: var(--text-main); transition: all 1s ease; min-height: 100vh; overflow-x: hidden; position: relative; }
+        h1, h2, h3 { font-family: 'Fredoka', sans-serif; font-weight: 600; margin: 0; letter-spacing: 1px; }
+        
+        /* --- INTRO SCREEN --- */
+        #introScreen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #050505; z-index: 9999999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 1.5s cubic-bezier(0.4, 0, 0.2, 1), transform 1.5s cubic-bezier(0.4, 0, 0.2, 1), visibility 1.5s; transform-origin: center; }
+        .intro-title { font-size: 4rem; color: #d8b4fe; text-shadow: 0 0 20px rgba(167, 139, 250, 0.6); margin-bottom: 10px; animation: pulseGlow 2s infinite alternate; text-align: center;}
+        .intro-btn { background: transparent; border: 2px solid #a78bfa; color: #a78bfa; padding: 15px 40px; border-radius: 30px; font-family: 'Fredoka', sans-serif; font-size: 1.5rem; cursor: pointer; transition: 0.3s; box-shadow: 0 0 15px rgba(167, 139, 250, 0.3), inset 0 0 15px rgba(167, 139, 250, 0.3); }
+        .intro-btn:hover { background: #a78bfa; color: #050505; box-shadow: 0 0 30px rgba(167, 139, 250, 0.8); transform: scale(1.05); }
+        @keyframes pulseGlow { 0% { text-shadow: 0 0 10px rgba(167, 139, 250, 0.4); } 100% { text-shadow: 0 0 30px rgba(167, 139, 250, 0.8), 0 0 60px rgba(167, 139, 250, 0.4); } }
+        
+        #moonDarkness { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); pointer-events: none; z-index: 9998; opacity: 0; transition: opacity 1.5s ease; }
+
+        /* --- UI Elements --- */
+        .header-controls { position: fixed; top: 20px; right: 20px; z-index: 1000; }
+        .toggle-btn { background: var(--glass-bg); border: 1px solid var(--glass-border); backdrop-filter: blur(10px); padding: 12px 25px; border-radius: 30px; font-family: 'Fredoka', sans-serif; font-size: 1.1rem; color: var(--text-main); cursor: pointer; box-shadow: var(--card-shadow); transition: 0.3s; }
+        .toggle-btn:hover { transform: translateY(-3px); }
+        .btn { background: var(--accent); color: #fff; border: none; padding: 10px 25px; border-radius: 20px; cursor: pointer; font-family: 'Nunito', sans-serif; font-weight: bold; transition: 0.3s; }
+        .btn:hover { transform: scale(1.05); }
+        .btn-small { background: transparent; border: 1px solid var(--glass-border); color: var(--text-muted); padding: 5px 15px; border-radius: 20px; font-size: 0.8rem; cursor: pointer; transition: 0.3s; }
+        .btn-small:hover { background: rgba(255,255,255,0.1); color: var(--text-main); }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 80px 20px 40px; position: relative; z-index: 10;}
+        .section { display: none; animation: fadeIn 1s ease forwards; position: relative; }
+        .section.active { display: block; }
+        .glass-card { background: var(--glass-bg); backdrop-filter: blur(16px); border: 1px solid var(--glass-border); border-radius: 20px; padding: 30px; box-shadow: var(--card-shadow); margin-bottom: 50px;}
+        .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; margin-bottom: 50px; }
+
+        /* --- Layouts --- */
+        .masonry-layout { column-count: 3; column-gap: 25px; padding: 20px 0; margin-bottom: 50px; }
+        .masonry-item { break-inside: avoid; margin-bottom: 25px; position: relative; border-radius: 15px; overflow: hidden; box-shadow: 0 10px 20px rgba(0,0,0,0.1); background: white; transition: transform 0.4s ease; }
+        .sleep-mode .masonry-item { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        .masonry-item:hover { transform: translateY(-8px) scale(1.02); }
+        
+        .masonry-item img { width: 100%; height: 280px; object-fit: cover; display: block; border-radius: 15px 15px 0 0; }
+        
+        .masonry-text { padding: 15px; text-align: center; position: relative; z-index: 2; background: inherit; }
+        .masonry-item h3 { font-size: 1.5rem; color: var(--accent); margin-bottom: 5px; }
+        .masonry-item p { font-size: 0.9rem; margin: 0; color: var(--text-muted); }
+
+        .interactive-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; margin-bottom: 50px; }
+        .interactive-card { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); border-radius: 15px; padding: 40px 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); text-align: center; cursor: pointer; transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease; position: relative; }
+        .interactive-card:hover { transform: translateY(-5px); }
+        .interactive-card h3 { font-size: 1.5rem; color: var(--accent); margin-bottom: 5px; }
+
+        /* Polaroid Develop Effect */
+        .polaroid-develop img { filter: grayscale(100%) brightness(0.2) blur(8px); transition: filter 3s ease-in-out; }
+        .polaroid-developed img { filter: grayscale(0%) brightness(1) blur(0px); transition: filter 3s ease-in-out; }
+
+        /* --- TRAVEL FEATURES --- */
+        .hero { text-align: center; margin-bottom: 60px; position: relative; }
+        .hero h1 { font-size: 4rem; color: var(--accent); margin-bottom: 10px; }
+        .airplane-window { width: 200px; height: 280px; background: #87CEEB; margin: 0 auto 30px; border-radius: 100px; border: 15px solid #f8f9fa; box-shadow: inset 0 0 20px rgba(0,0,0,0.2), 0 10px 20px rgba(0,0,0,0.1); position: relative; overflow: hidden; }
+        .window-cloud { position: absolute; font-size: 4rem; animation: cloudPass 8s linear infinite; }
+        @keyframes cloudPass { 0% { left: 110%; } 100% { left: -60%; } }
+
+        /* 3D Flip Postcard */
+        .flip-card { background-color: transparent; width: 100%; height: 280px; perspective: 1000px; }
+        .flip-card-inner { position: relative; width: 100%; height: 100%; text-align: center; transition: transform 0.8s; transform-style: preserve-3d; cursor: pointer; }
+        .flip-card.flipped .flip-card-inner { transform: rotateY(180deg); }
+        .flip-card-front, .flip-card-back { position: absolute; width: 100%; height: 100%; -webkit-backface-visibility: hidden; backface-visibility: hidden; border-radius: 15px; box-shadow: var(--card-shadow); box-sizing: border-box; overflow: hidden; }
+        .flip-card-front { background: url('https://images.unsplash.com/photo-1476514525535-07fb3b4ae5f1?w=500&h=300&fit=crop') no-repeat center center; background-size: cover; display: flex; align-items: flex-end; justify-content: center; padding-bottom: 15px; }
+        .flip-card-front span { background: rgba(255,255,255,0.8); padding: 5px 15px; border-radius: 20px; font-weight: bold; color: #333;}
+        .flip-card-back { background: var(--glass-bg); backdrop-filter: blur(16px); color: var(--text-main); transform: rotateY(180deg); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 20px; font-family: 'Fredoka', cursive; font-size: 1.3rem; border: 1px solid var(--glass-border); }
+
+        .mood-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px;}
+        .mood-btn { padding: 8px 15px; border-radius: 20px; border: 1px solid var(--accent); background: transparent; color: var(--text-main); cursor: pointer; transition: 0.3s; font-family: 'Nunito', sans-serif; font-weight: bold; }
+        .mood-btn:hover { background: var(--accent); color: #fff; transform: translateY(-2px); }
+        .flapper-board { display: flex; justify-content: center; gap: 5px; margin-top: 25px; flex-wrap: wrap; }
+        .flap { background: #111; color: #fff; font-family: 'Space Mono', monospace; font-size: 2rem; padding: 10px 15px; border-radius: 5px; position: relative; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; min-width: 30px;}
+        .flap::after { content: ''; position: absolute; top: 50%; left: 0; width: 100%; height: 2px; background: rgba(0,0,0,0.6); }
+
+        #flightDashboard { display: none; margin-top: 30px; animation: fadeIn 1s ease forwards; }
+        .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; text-align: left; background: rgba(255,255,255,0.2); padding: 20px; border-radius: 15px; }
+        .flight-tracker { margin-top: 20px; position: relative; width: 100%; height: 50px; border-bottom: 2px dashed var(--accent); }
+        .tracker-plane { position: absolute; bottom: -15px; left: 0; font-size: 2rem; transition: left 3s ease-in-out; }
+        .translator-box { grid-column: 1 / -1; text-align: center; background: rgba(255,255,255,0.3); padding: 15px; border-radius: 10px; font-family: 'Fredoka', sans-serif; font-size: 1.1rem; color: var(--accent); }
+
+        .packing-game { display: flex; justify-content: space-around; align-items: center; margin-top: 30px; padding: 20px; border: 2px dashed var(--glass-border); border-radius: 15px; flex-wrap: wrap; gap: 10px;}
+        .drag-item { font-size: 3rem; cursor: pointer; transition: transform 0.2s; } 
+        .drag-item:active { transform: scale(1.2); }
+        .suitcase { font-size: 5rem; transition: transform 0.3s; }
+        .suitcase.drag-over { transform: scale(1.1); filter: drop-shadow(0 0 10px var(--accent)); }
+
+        .souvenir-shelf { min-height: 80px; border-bottom: 5px solid rgba(255,255,255,0.4); margin-top: 20px; display: flex; align-items: flex-end; justify-content: center; gap: 15px; padding-bottom: 5px; flex-wrap: wrap;}
+        .souvenir-item { font-size: 3rem; animation: dropBounce 0.6s ease-out forwards; }
+        @keyframes dropBounce { 0% { transform: translateY(-100px); opacity: 0; } 60% { transform: translateY(10px); opacity: 1; } 80% { transform: translateY(-5px); } 100% { transform: translateY(0); } }
+
+        .css-coin { width: 35px; height: 35px; background: #ffd700; border-radius: 50%; border: 4px dashed #b8860b; box-sizing: border-box; position: absolute; pointer-events: none; animation: coinDrop 0.8s cubic-bezier(0.25, 1, 0.5, 1) forwards; z-index: 100; box-shadow: 0 4px 8px rgba(0,0,0,0.3); }
+        @keyframes coinDrop { 0% { transform: translateY(-50px) scale(1); opacity: 1; } 100% { transform: translateY(50px) scale(0.5); opacity: 0; } }
+
+        .passport-stamp { position: absolute; font-size: 3rem; opacity: 0.7; pointer-events: none; animation: stampDown 0.3s ease-out forwards; z-index: 100; transform: translate(-50%, -50%) var(--rot); display: flex; align-items: center; justify-content: center; }
+        @keyframes stampDown { 0% { transform: translate(-50%, -50%) scale(3) var(--rot); opacity: 0; } 100% { transform: translate(-50%, -50%) scale(1) var(--rot); opacity: 0.7; } }
+
+        /* Map Pins */
+        .map-container { position: relative; width: 100%; max-width: 600px; height: 300px; margin: 20px auto; background: url('https://upload.wikimedia.org/wikipedia/commons/8/80/World_map_-_low_resolution.svg') no-repeat center center; background-size: contain; opacity: 0.8; border-radius: 15px; }
+        .map-pin { position: absolute; font-size: 2rem; cursor: pointer; transition: transform 0.2s; filter: drop-shadow(0 4px 4px rgba(0,0,0,0.3)); transform: translate(-50%, -100%);}
+        .map-pin:hover { transform: translate(-50%, -120%) scale(1.2); }
+        #mapInfo { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); background: var(--glass-bg); padding: 8px 15px; border-radius: 10px; font-weight: bold; color: var(--text-main); opacity: 0; transition: 0.3s; white-space: nowrap; box-shadow: var(--card-shadow); pointer-events: none;}
+
+        .camera-btn { position: fixed; bottom: 30px; right: 30px; font-size: 2rem; background: var(--glass-bg); border: 1px solid var(--glass-border); border-radius: 50%; width: 70px; height: 70px; cursor: pointer; z-index: 100; box-shadow: var(--card-shadow); transition: 0.3s; display: flex; align-items: center; justify-content: center; }
+        .camera-btn:hover { transform: scale(1.1) rotate(-10deg); }
+        #flashOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: white; opacity: 0; pointer-events: none; z-index: 9999; }
+        @keyframes flashAnim { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+        .boarding-pass { display: flex; justify-content: space-between; align-items: center; background: var(--glass-bg); border: 2px dashed var(--accent); border-radius: 15px; padding: 20px 40px; margin-bottom: 50px; font-family: 'Space Mono', monospace; }
+        .pass-barcode { font-size: 2rem; letter-spacing: -3px; opacity: 0.5; }
+        
+        .scratch-container { position: relative; width: 250px; height: 250px; margin: 0 auto; border-radius: 15px; overflow: hidden; box-shadow: var(--card-shadow); cursor: crosshair; touch-action: none; }
+        .scratch-bg, .scratchCanvas { position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; }
+        .scratchCanvas { z-index: 2; }
+
+        /* --- SLEEP FEATURES --- */
+        .stars-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-image: radial-gradient(2px 2px at 20px 30px, #fff, transparent), radial-gradient(2px 2px at 90px 80px, #fff, transparent); background-size: 150px 150px; opacity: 0; z-index: -1; transition: 1s ease; }
+        .sleep-mode .stars-bg { opacity: 0.4; }
+        
+        .star-dust { position: absolute; width: 4px; height: 4px; background: white; border-radius: 50%; pointer-events: none; animation: fallFade 1s linear forwards; box-shadow: 0 0 8px white; z-index: 9999; }
+        .cloud-dust { position: absolute; font-size: 1.5rem; pointer-events: none; animation: fallFade 1.5s linear forwards; z-index: 9999; }
+        @keyframes fallFade { 0% { transform: translateY(0) scale(1); opacity: 0.8; } 100% { transform: translateY(30px) scale(0); opacity: 0; } }
+        
+        .uv-card { background: #070a13; border: 1px solid rgba(255,255,255,0.1); border-radius: 15px; text-align: center; position: relative; overflow: hidden; cursor: crosshair; box-shadow: inset 0 0 30px rgba(0,0,0,0.8); margin-bottom: 50px; height: 150px; touch-action: none;}
+        .uv-base-text { position: absolute; top: 0; left: 0; right: 0; bottom: 0; display: flex; align-items: center; justify-content: center; font-family: 'Fredoka', sans-serif; font-size: 1.8rem; color: #070a13; z-index: 1; user-select: none; pointer-events: none;}
+        .uv-overlay { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(167, 139, 250, 0.1); color: #fff; font-family: 'Fredoka', sans-serif; font-size: 1.8rem; display: flex; align-items: center; justify-content: center; -webkit-mask-image: radial-gradient(circle 80px at var(--x, -100%) var(--y, -100%), black 0%, transparent 100%); mask-image: radial-gradient(circle 80px at var(--x, -100%) var(--y, -100%), black 0%, transparent 100%); z-index: 2; pointer-events: none; }
+        .uv-hint { position: absolute; bottom: 10px; width: 100%; color: rgba(255,255,255,0.3); font-size: 0.8rem; z-index: 3; pointer-events: none; }
+
+        .swinging { animation: swingChime 2s ease-in-out forwards; }
+        @keyframes swingChime { 0% { transform: rotate(0deg); } 20% { transform: rotate(15deg); } 40% { transform: rotate(-10deg); } 60% { transform: rotate(5deg); } 80% { transform: rotate(-2deg); } 100% { transform: rotate(0deg); } }
+
+        .smoke-text { position: absolute; left: 50%; transform: translateX(-50%); color: var(--text-main); font-family: 'Nunito', sans-serif; font-weight: bold; font-size: 1.2rem; pointer-events: none; animation: smokeUp 2.5s forwards; z-index: 50;}
+        @keyframes smokeUp { 0% { filter: blur(0); opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { filter: blur(15px); opacity: 0; transform: translate(-50%, -50px) scale(1.5); } }
+
+        /* DIFFUSER CSS */
+        .diffuser-steam { position: absolute; width: 10px; height: 30px; background: rgba(255, 255, 255, 0.5); border-radius: 50%; filter: blur(5px); animation: steamRise 2s infinite ease-in; opacity: 0; pointer-events: none;}
+        @keyframes steamRise { 0% { transform: translateY(0) scale(1); opacity: 0.8; } 100% { transform: translateY(-50px) scale(3); opacity: 0; } }
+
+        /* Weather Animations */
+        #rainContainer, #snowContainer { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5; display: none; }
+        .drop { position: absolute; background: rgba(255,255,255,0.4); width: 2px; height: 15px; animation: rainFall linear infinite; }
+        @keyframes rainFall { 0% { transform: translateY(-10px); } 100% { transform: translateY(100vh); } }
+        .snowflake { position: absolute; background: white; border-radius: 50%; opacity: 0.8; animation: snowFall linear infinite; }
+        @keyframes snowFall { 0% { transform: translateY(-10px) translateX(0); } 100% { transform: translateY(100vh) translateX(20px); } }
+
+        .shooting-star { position: fixed; width: 100px; height: 2px; background: linear-gradient(90deg, white, transparent); border-radius: 50%; z-index: 9999; animation: shootStar 1.2s linear forwards; pointer-events: none; box-shadow: 0 0 10px white; }
+        @keyframes shootStar { 0% { transform: translate(-100px, 100px) rotate(-45deg); opacity: 1; } 100% { transform: translate(120vw, -100vh) rotate(-45deg); opacity: 0; } }
+
+        .bubble-wrap-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); gap: 10px; max-width: 300px; margin: 20px auto; }
+        .bubble { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); box-shadow: inset 0 0 10px rgba(255,255,255,0.5); cursor: pointer; transition: 0.1s; display: flex; align-items: center; justify-content: center; color: transparent; font-size: 0.8rem;}
+        .sleep-mode .bubble { background: rgba(255,255,255,0.05); }
+        .bubble.popped { background: transparent; box-shadow: none; border: 1px solid rgba(255,255,255,0.1); color: var(--text-muted); cursor: default; }
+
+        .orb-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 40px 0; }
+        .orb { width: 160px; height: 160px; border-radius: 50%; background: radial-gradient(circle, rgba(167, 139, 250, 0.4) 0%, transparent 70%); animation: breathe 8s infinite ease-in-out; display: flex; align-items: center; justify-content: center; color: var(--text-main); font-family: 'Fredoka', cursive; font-size: 1.5rem; text-align: center; }
+        @keyframes breathe { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.4); opacity: 1; } }
+
+        .falling-snack { position: fixed; top: -50px; font-size: 2.5rem; z-index: 9999; animation: snackDrop 3s forwards linear; }
+        @keyframes snackDrop { 0% { transform: translateY(0) rotate(0deg); } 100% { transform: translateY(110vh) rotate(360deg); } }
+
+        .cat-widget { font-size: 4rem; text-align: center; cursor: pointer; user-select: none; position: relative; display: inline-block; }
+        .zzz { position: absolute; font-size: 1rem; color: var(--text-muted); opacity: 0; animation: floatZzz 2s infinite linear; pointer-events: none; top: -10px; right: -10px;}
+        @keyframes floatZzz { 0% { transform: translate(0, 0) scale(0.5); opacity: 1; } 100% { transform: translate(20px, -40px) scale(1.5); opacity: 0; } }
+
+        #dndOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #070b14; z-index: 10000; display: none; flex-direction: column; align-items: center; justify-content: center; color: #cbd5e1; user-select: none; }
+        #digitalClock { font-family: 'Space Mono', monospace; font-size: 6rem; color: var(--accent); text-shadow: 0 0 20px rgba(167, 139, 250, 0.5); }
+
+        .note-creator { background: rgba(255, 255, 255, 0.05); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; max-width: 600px; margin: 0 auto; box-sizing: border-box; }
+        #noteTitle, #worryInput { width: 100%; box-sizing: border-box; background: transparent; border: none; border-bottom: 2px dashed var(--glass-border); color: var(--text-main); font-size: 1.2rem; font-family: 'Fredoka', sans-serif; padding: 10px 0; margin-bottom: 15px; outline: none; }
+        textarea { width: 100%; box-sizing: border-box; height: 120px; background: rgba(255, 255, 255, 0.1); border: 1px solid var(--glass-border); border-radius: 15px; padding: 15px; font-family: 'Nunito', sans-serif; color: var(--text-main); outline: none; margin-bottom: 10px; resize: none;}
+        .saved-note-card { background: var(--glass-bg); border: 1px solid var(--glass-border); padding: 20px; border-radius: 15px; break-inside: avoid; position: relative; box-shadow: var(--card-shadow); margin-bottom: 20px;}
+        .delete-btn { position: absolute; top: 10px; right: 10px; background: transparent; border: none; color: var(--accent); cursor: pointer; font-size: 1.2rem; opacity: 0.5; transition: 0.3s; }
+        .delete-btn:hover { opacity: 1; transform: scale(1.2); }
+
+        /* --- FOOTER --- */
+        .site-footer { text-align: center; padding: 40px 20px; margin-top: 50px; border-top: 1px solid var(--glass-border); font-family: 'Nunito', sans-serif; color: var(--text-main); }
+        .site-footer .quote { font-style: italic; font-size: 1.2rem; margin-bottom: 15px; color: var(--text-muted); }
+        .site-footer a { color: var(--accent); text-decoration: none; font-weight: bold; transition: 0.3s; }
+        .site-footer a:hover { opacity: 0.7; }
+
+        @media (max-width: 900px) { .masonry-layout { column-count: 2; } }
+        @media (max-width: 600px) { 
+            .masonry-layout { column-count: 1; } 
+            .boarding-pass { flex-direction: column; text-align: center; gap: 20px; padding: 30px 20px; }
+            .boarding-pass > div { border-bottom: 1px dashed var(--glass-border); padding-bottom: 15px; width: 100%; }
+            .boarding-pass > div:last-child { border-bottom: none; padding-bottom: 0; }
+            .pass-barcode { font-size: 1.5rem; letter-spacing: 5px; opacity: 0.8; }
+            .hero h1 { font-size: 2.8rem; }
+            .airplane-window { width: 150px; height: 210px; border-width: 10px; }
+            #digitalClock { font-size: 4rem; }
+            .camera-btn { bottom: 20px; right: 20px; width: 60px; height: 60px; font-size: 1.5rem; }
+            .flap { font-size: 1.2rem; padding: 5px 8px; min-width: 20px; }
+            .suitcase { font-size: 4rem; }
+            .drag-item { font-size: 2.5rem; }
+            .dashboard-grid { grid-template-columns: 1fr; text-align: center; }
+            .uv-base-text, .uv-overlay { font-size: 1.2rem; padding: 20px; }
+            .intro-title { font-size: 3rem; }
+        }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body id="mainBody">
+
+    <div id="introScreen">
+        <h1 class="intro-title">Welcome Ilteza</h1>
+        <p style="color: #cbd5e1; font-family: 'Nunito'; margin-bottom: 30px;">Enter your world.</p>
+        <button class="intro-btn" onclick="enterSite()">Enter</button>
+    </div>
+
+    <audio id="teaSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_7ea243f7f1.mp3?filename=pouring-water-80252.mp3"></audio>
+    <audio id="meowSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_247dd864df.mp3?filename=cat-meow-14536.mp3"></audio>
+    <audio id="purrSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_2dc73030ba.mp3?filename=cat-purring-and-meow-5928.mp3" loop></audio>
+    <audio id="chimeSound" src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_c35f2d6527.mp3?filename=wind-chimes-1-44026.mp3"></audio>
+    <audio id="quranAudio" src="https://server6.mp3quran.net/balilah/009.mp3"></audio>
+
+    <div id="moonDarkness"></div>
+    <div class="stars-bg" id="mainStars"></div>
+    
+    <div id="rainContainer"></div>
+    <div id="snowContainer"></div>
+    
+    <div id="flashOverlay"></div>
+
+    <div id="dndOverlay" onclick="handleDNDTap()">
+        <div id="digitalClock">00:00</div>
+        <h2 style="margin-top: 20px; font-family: 'Nunito'; text-align: center;">Apu ghumaitesen.</h2>
+        <p style="opacity: 0.5; text-align: center; margin-top: 10px;">(Tap screen <strong>twice</strong> to unlock)</p>
+    </div>
+
+    <div class="header-controls">
+        <button class="toggle-btn" id="modeToggle">🌙 Activate Ilteza Mode</button>
+    </div>
+
+    <div class="camera-btn" id="cameraBtn" onclick="takePhoto()" title="Take a picture!">📸</div>
+
+    <div class="container" id="mainContainer">
+        
+        <div id="travelPage" class="section active">
+            
+            <div class="hero">
+                <div class="airplane-window">
+                    <div class="window-cloud" style="top: 20px;">☁️</div>
+                    <div class="window-cloud" style="top: 100px; animation-delay: 3s; font-size: 5rem;">☁️</div>
+                    <div class="window-cloud" style="top: 180px; animation-delay: 6s; font-size: 3rem;">☁️</div>
+                </div>
+                <h1>Ilteza's Adventures ✈️</h1>
+                <p>"The world is too big to stay in one place."<br><span style="font-size:0.9rem; color:var(--accent);">(Tap the background to leave a stamp!)</span></p>
+                
+                <div class="glass-card" style="max-width: 500px; margin: 30px auto; padding: 20px;">
+                    <h3>What's your travel mood today?</h3>
+                    <div class="mood-buttons">
+                        <button class="mood-btn" onclick="generateDestination('relax')">🌴 Relaxing</button>
+                        <button class="mood-btn" onclick="generateDestination('adventure')">🏔️ Adventurous</button>
+                        <button class="mood-btn" onclick="generateDestination('food')">🍝 Foodie</button>
+                        <button class="mood-btn" onclick="generateDestination('city')">🏙️ City Vibes</button>
+                    </div>
+                    
+                    <div id="flapperDisplay" class="flapper-board" style="display: none;"></div>
+                    <p id="flapperMessage" style="margin-top: 15px; font-weight: bold; color: var(--accent); opacity: 0; transition: 0.5s;">&nbsp;</p>
+
+                    <div id="flightDashboard">
+                        <div class="dashboard-grid">
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">HOME TIME (SYLHET)</span><br>
+                                <span id="homeTime" style="font-size: 1.5rem; font-family: 'Space Mono'; font-weight: bold;">--:--</span>
+                            </div>
+                            <div>
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">DESTINATION TIME</span><br>
+                                <span id="destTime" style="font-size: 1.5rem; font-family: 'Space Mono'; font-weight: bold;">--:--</span>
+                            </div>
+                            <div style="grid-column: 1 / -1; text-align: center; margin-top: 10px;">
+                                <span style="font-size: 0.8rem; color: var(--text-muted);">LIVE WEATHER</span><br>
+                                <span id="liveWeather" style="font-size: 1.2rem; font-weight: bold;">Loading... 🌤️</span>
+                            </div>
+                            <div class="translator-box" id="translatorBox">Loading local language...</div>
+                        </div>
+                        <div class="flight-tracker">
+                            <div id="trackerPlane" class="tracker-plane">✈️</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="boarding-pass">
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">PASSENGER</div>
+                    <div style="font-size: 1.2rem; font-weight: bold;">ILTEZA RAHMAN</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">DESTINATION</div>
+                    <div style="font-size: 1.2rem; font-weight: bold;">ANYWHERE</div>
+                </div>
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted);">CLASS</div>
+                    <div style="font-size: 1.2rem; font-weight: bold;">FIRST CLASS</div>
+                </div>
+                <div class="pass-barcode">|||| ||| ||||</div>
+            </div>
+
+            <div class="grid-2">
+                <div class="flip-card" onclick="this.classList.toggle('flipped')">
+                    <div class="flip-card-inner">
+                        <div class="flip-card-front">
+                            <span>Tap to read 💌</span>
+                        </div>
+                        <div class="flip-card-back">
+                            <p>"To the absolute best sister. The world is waiting for you!"</p>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: 15px;">-Your chuto bhai</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-card" style="text-align: center; margin-bottom: 0; cursor: pointer; position: relative; overflow: hidden;" onclick="addFund(this)">
+                    <div style="font-size: 4rem; margin-bottom: 10px;" id="pouchEmoji">👝</div>
+                    <h3 style="margin-bottom: 5px;">Travel Fund</h3>
+                    <p style="font-family: 'Space Mono'; font-size: 1.5rem; color: var(--accent); font-weight: bold;" id="fundAmount">$0</p>
+                    <p style="font-size: 0.8rem; color: var(--text-muted);">Tap to save a coin!</p>
+                </div>
+            </div>
+
+            <div class="glass-card" style="text-align: center; margin-bottom: 50px; padding: 20px;">
+                <h2>World Explorer 🗺️</h2>
+                <p style="color: var(--text-muted);">Tap the red pins on the map!</p>
+                <div class="map-container">
+                    <div class="map-pin" style="top: 30%; left: 20%;" onclick="showPinInfo('North America: Let\'s visit New York!')">📍</div>
+                    <div class="map-pin" style="top: 25%; left: 50%;" onclick="showPinInfo('Europe: Pasta in Italy!')">📍</div>
+                    <div class="map-pin" style="top: 50%; left: 75%;" onclick="showPinInfo('Asia: Cherry blossoms in Japan!')">📍</div>
+                    <div id="mapInfo"></div>
+                </div>
+            </div>
+
+            <div class="glass-card" style="text-align: center; margin-bottom: 50px;">
+                <h2>Pack Your Bags! 🧳</h2>
+                <p style="color: var(--text-muted);">Tap the essentials into your suitcase.</p>
+                <div class="packing-game">
+                    <div id="item1" class="drag-item" draggable="true" ondragstart="drag(event)" onclick="tapToPack(this)">🕶️</div>
+                    <div id="item2" class="drag-item" draggable="true" ondragstart="drag(event)" onclick="tapToPack(this)">📷</div>
+                    <div id="item3" class="drag-item" draggable="true" ondragstart="drag(event)" onclick="tapToPack(this)">🎫</div>
+                    <div id="suitcaseDrop" class="suitcase" ondrop="drop(event)" ondragover="allowDrop(event)">🧳</div>
+                </div>
+                <p id="packingStatus" style="color: var(--accent); font-weight: bold; margin-top: 15px; opacity: 0; transition: 0.3s;">All packed! Let's go!</p>
+            </div>
+
+            <div class="glass-card" style="text-align: center; margin-bottom: 50px;">
+                <h2>Souvenir Shop 🏺</h2>
+                <p style="color: var(--text-muted);">Collect a little trinket for your shelf.</p>
+                <button class="btn" onclick="buySouvenir()">Buy Souvenir</button>
+                <div class="souvenir-shelf" id="souvenirShelf"></div>
+            </div>
+
+            <h2 style="text-align: center; margin-bottom: 30px;">Dream Destinations</h2>
+            
+            <div class="masonry-layout" id="travelGallery">
+                <div class="masonry-item">
+                    <img src="https://images.unsplash.com/photo-1713374565634-e093f0b5d787?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Japan">
+                    <div class="masonry-text"><h3>Mount Fuji, Japan</h3><p>Cherry blossoms & serene.</p></div>
+                </div>
+                <div class="masonry-item">
+                    <img src="https://images.unsplash.com/photo-1593544648982-cf4bbfb8fc38?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Istanbul">
+                    <div class="masonry-text"><h3>Istanbul, Türkiye</h3><p>Beautiful Masjid & scenery.</p></div>
+                </div>
+                <div class="masonry-item">
+                    <img src="https://images.unsplash.com/photo-1627728734379-a5f8c099763e?q=80&w=735&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D" alt="Makkah">
+                    <div class="masonry-text"><h3>Makkah, Saudi Arabia</h3><p>Holiest city & peace.</p></div>
+                </div>
+            </div>
+
+            <div class="glass-card" style="text-align: center; margin-bottom: 50px;">
+                <h2>In Loving Memory 🐾</h2>
+                <p style="color: var(--text-muted); margin-bottom: 20px;">Scratch off the silver layers to reveal your sweet angel.</p>
+                
+                <div style="display: flex; gap: 20px; justify-content: center; flex-wrap: wrap;">
+                    <div class="scratch-container">
+                        <img src="baby.jpeg" class="scratch-bg" alt="Cat Memory 1">
+                        <canvas class="scratchCanvas"></canvas>
+                    </div>
+
+                    <div class="scratch-container">
+                        <img src="baby (2).jpeg" class="scratch-bg" alt="Cat Memory 2">
+                        <canvas class="scratchCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div id="sleepPage" class="section">
+            
+            <div class="hero">
+                <div style="font-size: 5rem; cursor: pointer; user-select: none; margin-bottom: 10px;" id="moonEmoji" onclick="changeMoon()">🌕</div>
+                <h1 style="color: var(--accent);">Ilteza Mode Activated 😴</h1>
+                <p>"Every adventurer needs a place to recharge."</p>
+                <p style="font-size: 0.8rem; color: var(--text-muted);">Tap the moon to lower the lights.</p>
+                <button class="btn" onclick="lockDND()" style="margin-top: 15px; background: #cbd5e1; color: #0f172a;">🔒 Lock Screen</button>
+            </div>
+
+            <div class="orb-container">
+                <div class="orb" id="breatheText">Breathe in...</div>
+                <div style="display: flex; gap: 10px; justify-content: center; margin-top: 20px;">
+                    <button id="cursorBtn" class="btn-small" onclick="toggleCursor()">Cursor: Stars ✨</button>
+                    <button id="hapticBtn" class="btn-small" onclick="toggleHaptics()">Haptics: OFF 📴</button>
+                </div>
+            </div>
+
+            <div class="grid-2">
+                <div class="glass-card" style="text-align: center; margin-bottom: 0;">
+                    <h2>Can't Sleep? 🌠</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">Stars tracked: <span id="countTotalText" style="font-weight:bold; color:var(--accent); font-size:1.2rem;">0</span></p>
+                    <button class="btn" onclick="countItem()">Track a Star</button>
+                </div>
+                
+                <div class="glass-card" style="text-align: center; margin-bottom: 0;">
+                    <h2>Cozy Weather 🌧️❄️</h2>
+                    <p style="color: var(--text-muted); margin-bottom: 15px;">Change the atmosphere.</p>
+                    <div style="display: flex; justify-content: center; gap: 10px;">
+                        <button class="btn" id="rainControlBtn" onclick="toggleRain()">Rain 🌧️</button>
+                        <button class="btn" id="snowControlBtn" onclick="toggleSnow()">Snow ❄️</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card" style="text-align: center;">
+                <h2>Decompression Zone 🫧</h2>
+                <p style="color: var(--text-muted);">Pop some bubble wrap before bed.</p>
+                <div class="bubble-wrap-grid" id="bubbleGrid"></div>
+                <button class="btn" onclick="resetBubbles()" style="margin-top: 15px; padding: 5px 15px; font-size: 0.8rem;">Get Fresh Sheet</button>
+            </div>
+
+            <div class="uv-card" onmousemove="shineUV(event)" ontouchstart="shineUV(event)" ontouchmove="shineUV(event)">
+                <div class="uv-base-text">Apu, you are absolutely the best. Don't forget that! 💖</div>
+                <div class="uv-overlay" id="uvLight">Apu, you are absolutely the best. Don't forget that! 💖</div>
+                <div class="uv-hint">Slide your finger around the dark box to reveal the secret.</div>
+            </div>
+
+            <h2 style="text-align: center; margin-bottom: 30px;">Your Cozy Corner</h2>
+            
+            <div class="interactive-grid">
+                <div class="interactive-card" onclick="toggleQuran(this)">
+                    <div id="quranEmoji" style="font-size: 4rem; margin-bottom: 15px; transition: 0.3s;">📖</div>
+                    <h3>Qur'an Recitation</h3>
+                    <p id="quranText" style="color: var(--text-muted);">Tap to play Qur'an.</p>
+                </div>
+
+                <div class="interactive-card" id="nightlightCard" onclick="toggleNightlight(this)">
+                    <div id="nightlightEmoji" style="font-size: 4rem; margin-bottom: 15px; transition: 0.3s;">🪔</div>
+                    <h3>Nightlight</h3>
+                    <p id="nightlightText" style="color: var(--text-muted);">Tap to turn on.</p>
+                </div>
+
+                <div class="interactive-card" onclick="brewTea(this)">
+                    <div id="teaEmoji" style="font-size: 4rem; margin-bottom: 15px;">🍵</div>
+                    <h3>Warm Tea</h3>
+                    <p id="teaText" style="color: var(--text-muted);">Tap to brew a fresh cup.</p>
+                </div>
+                
+                <div class="interactive-card">
+                    <div class="cat-widget" id="catWidget" onclick="toggleCat()" style="margin: 10px 0;">
+                        🐈‍⬛<span class="zzz" id="catZzz" style="opacity: 1;">Zzz</span>
+                    </div>
+                    <h3>Kitty Companion</h3>
+                    <p id="catStatus" style="font-size: 0.9rem; color: var(--text-muted);">Tap to wake kitty up!</p>
+                </div>
+
+                <div class="interactive-card" onmouseenter="playChimes(this)" ontouchstart="playChimes(this)" style="overflow: visible;">
+                    <div id="chimeEmoji" style="font-size: 4rem; margin-bottom: 15px; transform-origin: top center;">🎐</div>
+                    <h3>Wind Chimes</h3>
+                    <p style="color: var(--text-muted);">Brush past to ring.</p>
+                </div>
+
+                <div class="interactive-card" onclick="toggleDiffuser(this)">
+                    <div id="diffuserEmoji" style="font-size: 4rem; margin-bottom: 15px; position: relative; display: inline-block;">🌿</div>
+                    <h3>Aroma Diffuser</h3>
+                    <p id="diffuserText" style="color: var(--text-muted);">Tap to turn on.</p>
+                </div>
+
+                <div class="interactive-card" onclick="spinFidget(this)">
+                    <div id="fidgetEmoji" style="font-size: 4rem; margin-bottom: 15px; transition: transform 2.5s cubic-bezier(0.1, 1, 0.2, 1); display: inline-block;">🌀</div>
+                    <h3>Fidget Spinner</h3>
+                    <p id="fidgetText" style="color: var(--text-muted);">Tap to spin.</p>
+                </div>
+
+                <div class="interactive-card" onclick="dropSnack(this)">
+                    <div id="snackEmoji" style="font-size: 4rem; margin-bottom: 15px; transition: transform 0.2s;">🍬</div>
+                    <h3>Midnight Cravings?</h3>
+                    <p id="snackText" style="color: var(--text-muted);">Tap for a treat.</p>
+                </div>
+            </div>
+
+            <div class="glass-card" style="text-align: center; margin-bottom: 50px;">
+                <h2>Midnight Canvas 🎨</h2>
+                <p style="color: var(--text-muted); margin-bottom: 15px;">Draw with glowing light to clear your mind.</p>
+                <canvas id="drawCanvas" style="width: 100%; height: 250px; background: #070a13; border-radius: 15px; cursor: crosshair; box-shadow: inset 0 0 20px rgba(0,0,0,0.8); touch-action: none;"></canvas>
+            </div>
+
+            <div class="glass-card" style="text-align: center; margin-bottom: 50px;">
+                <h2>The Worry Burner 🔥</h2>
+                <p style="color: var(--text-muted);">What's keeping you awake? Type it here and watch it burn away.</p>
+                <div class="note-creator">
+                    <input type="text" id="worryInput" placeholder="I'm stressed about...">
+                    <button class="btn" onclick="burnWorry()" style="width: 100%;">Let it go ✨</button>
+                </div>
+                <div id="smokeContainer" style="height: 40px; position:relative; margin-top: 10px;"></div>
+            </div>
+
+            <div class="glass-card" style="margin-bottom: 50px;">
+                <h2 style="text-align: center;">Dream Notes 💭</h2>
+                <p style="text-align: center; color: var(--text-muted); margin-bottom: 20px;">Your thoughts, safely stored.</p>
+                
+                <div class="note-creator">
+                    <input type="text" id="noteTitle" placeholder="Title (e.g., Late night thoughts)">
+                    <textarea id="noteContent" placeholder="Jot down a thought..."></textarea>
+                    <button class="btn" onclick="saveNewNote()" style="width: 100%;">Add Note ✨</button>
+                </div>
+
+                <div id="notesContainer" class="masonry-layout" style="margin-top: 30px;"></div>
+            </div>
+
+        </div>
+    </div>
+
+    <footer class="site-footer">
+        <p class="quote">"Side by side or miles apart, sisters will always be connected by the heart."</p>
+        <p>Made with ❤️ by <a href="https://github.com/Cyber-Mood/" target="_blank">your little sibling</a></p>
+    </footer>
+
+    <script>
+        let isSleepMode = false;
+        let clockInterval;
+
+        // SHARED AUDIO ENGINE (Fixes the Bubble Wrap bug and Mobile Safari policies!)
+        let sysAudioCtx;
+        function getSysAudio() {
+            if(!sysAudioCtx) {
+                sysAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if(sysAudioCtx.state === 'suspended') {
+                sysAudioCtx.resume();
+            }
+            return sysAudioCtx;
+        }
+
+        // Intro Screen Lock & Unlock
+        document.body.style.overflow = 'hidden'; 
+        function enterSite() {
+            const intro = document.getElementById('introScreen');
+            intro.style.opacity = '0';
+            intro.style.transform = 'scale(1.1)'; 
+            document.body.style.overflow = 'auto'; 
+            setTimeout(() => { intro.style.display = 'none'; }, 1500); 
+        }
+
+        const toggleBtn = document.getElementById('modeToggle');
+        const travelPage = document.getElementById('travelPage');
+        const sleepPage = document.getElementById('sleepPage');
+        const cameraBtn = document.getElementById('cameraBtn');
+
+        toggleBtn.addEventListener('click', () => {
+            isSleepMode = !isSleepMode;
+            if (isSleepMode) {
+                document.body.classList.add('sleep-mode');
+                toggleBtn.innerHTML = '☀️ Back to Adventure';
+                travelPage.classList.remove('active');
+                sleepPage.classList.add('active');
+                cameraBtn.style.display = 'none'; 
+            } else {
+                document.body.classList.remove('sleep-mode');
+                toggleBtn.innerHTML = '🌙 Activate Ilteza Mode';
+                sleepPage.classList.remove('active');
+                travelPage.classList.add('active');
+                cameraBtn.style.display = 'flex'; 
+            }
+        });
+
+        // Passport Stamper
+        document.getElementById('travelPage').addEventListener('click', (e) => {
+            if (isSleepMode) return;
+            if (e.target.closest('.btn, .btn-small, .toggle-btn, .camera-btn, .glass-card, .interactive-card, .masonry-item, .drag-item, .suitcase, canvas, select, .flip-card, .map-pin')) return;
+            
+            const stamps = ['🗼', '🗽', '⛩️', '✈️', '🌍', '🌴', '📸'];
+            const randomStamp = stamps[Math.floor(Math.random() * stamps.length)];
+            const rot = (Math.random() * 40 - 20) + 'deg'; 
+            const stampEl = document.createElement('div');
+            stampEl.innerText = randomStamp;
+            stampEl.className = 'passport-stamp';
+            
+            stampEl.style.left = e.pageX + 'px';
+            stampEl.style.top = e.pageY + 'px';
+            stampEl.style.setProperty('--rot', `rotate(${rot})`);
+            
+            document.getElementById('travelPage').appendChild(stampEl);
+        });
+
+        // QURAN PLAYER LOGIC
+        let isQuranPlaying = false;
+        function toggleQuran(el) {
+            const audio = document.getElementById('quranAudio');
+            const text = document.getElementById('quranText');
+            const emoji = document.getElementById('quranEmoji');
+            if(!isQuranPlaying) {
+                audio.play().catch(e => console.log("Audio block"));
+                text.innerText = "Playing peacefully...";
+                text.style.color = "var(--accent)";
+                el.style.boxShadow = "0 0 20px rgba(167, 139, 250, 0.4)";
+                emoji.style.textShadow = "0 0 20px #a78bfa, 0 0 40px #a78bfa";
+                isQuranPlaying = true;
+            } else {
+                audio.pause();
+                text.innerText = "Tap to play Qur'an.";
+                text.style.color = "var(--text-muted)";
+                el.style.boxShadow = "0 10px 20px rgba(0,0,0,0.3)";
+                emoji.style.textShadow = "none";
+                isQuranPlaying = false;
+            }
+        }
+
+        // MAP PINS LOGIC
+        function showPinInfo(message) {
+            const infoBox = document.getElementById('mapInfo');
+            infoBox.innerText = message;
+            infoBox.style.opacity = '1';
+            setTimeout(() => { infoBox.style.opacity = '0'; }, 3000);
+        }
+
+        // Virtual Nightlight
+        let nightlightOn = false;
+        function toggleNightlight(el) {
+            nightlightOn = !nightlightOn;
+            const emoji = el.querySelector('#nightlightEmoji');
+            const text = el.querySelector('#nightlightText');
+            if(nightlightOn) {
+                el.style.background = "rgba(255, 200, 100, 0.15)";
+                el.style.boxShadow = "0 0 40px rgba(255, 200, 100, 0.3), inset 0 0 20px rgba(255, 200, 100, 0.2)";
+                emoji.style.textShadow = "0 0 20px #ffd700, 0 0 40px #ffa500";
+                text.innerText = "Glowing warmly. 💛";
+                text.style.color = "#ffd700";
+            } else {
+                el.style.background = "rgba(255, 255, 255, 0.05)";
+                el.style.boxShadow = "0 10px 20px rgba(0,0,0,0.3)";
+                emoji.style.textShadow = "none";
+                text.innerText = "Tap to turn on.";
+                text.style.color = "var(--text-muted)";
+            }
+        }
+
+        // TRAVEL FUNDS 
+        let travelFunds = 0;
+        function playCoinSound() {
+            const actx = getSysAudio();
+            const osc = actx.createOscillator();
+            const gain = actx.createGain();
+            osc.connect(gain);
+            gain.connect(actx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(1200, actx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(2000, actx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.5, actx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.1);
+            osc.start();
+            osc.stop(actx.currentTime + 0.1);
+        }
+
+        function addFund(el) {
+            travelFunds += 10;
+            document.getElementById('fundAmount').innerText = `$${travelFunds}`;
+            playCoinSound();
+            
+            for(let i=0; i<3; i++) {
+                setTimeout(() => {
+                    const coin = document.createElement('div');
+                    coin.className = 'css-coin';
+                    const rect = el.getBoundingClientRect();
+                    coin.style.left = (Math.random() * rect.width * 0.7 + 20) + 'px';
+                    coin.style.top = '10px';
+                    el.appendChild(coin);
+                    setTimeout(() => coin.remove(), 1000);
+                }, i * 150);
+            }
+        }
+
+        // Moon Phases
+        let moonPhase = 0;
+        const phases = ['🌕', '🌖', '🌗', '🌘', '🌑'];
+        function changeMoon() {
+            moonPhase = (moonPhase + 1) % phases.length;
+            document.getElementById('moonEmoji').innerText = phases[moonPhase];
+            const darkOverlay = document.getElementById('moonDarkness');
+            if (phases[moonPhase] === '🌑') {
+                darkOverlay.style.opacity = '1';
+            } else {
+                darkOverlay.style.opacity = '0';
+            }
+        }
+
+        // Compass
+        const compass = document.getElementById('compassArrow');
+        document.addEventListener('mousemove', (e) => {
+            if (isSleepMode) return;
+            const rect = compass.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2;
+            const centerY = rect.top + rect.height / 2;
+            const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX);
+            compass.style.transform = `rotate(${angle * (180 / Math.PI) + 90}deg)`;
+        });
+
+        // Scratch-Off Canvas logic 
+        const canvases = document.querySelectorAll('.scratchCanvas');
+        
+        function initScratch(canvas) {
+            const ctx = canvas.getContext('2d', { willReadFrequently: true });
+            let isDrawing = false;
+
+            function resizeCanvas() {
+                canvas.width = 250;
+                canvas.height = 250;
+                ctx.fillStyle = '#cbd5e1';
+                ctx.fillRect(0, 0, 250, 250);
+                ctx.font = '600 20px Fredoka';
+                ctx.fillStyle = '#5a738e';
+                ctx.textAlign = 'center';
+                ctx.fillText('Scratch here!', 125, 125);
+            }
+            
+            window.addEventListener('load', resizeCanvas);
+            window.addEventListener('resize', resizeCanvas);
+            resizeCanvas();
+
+            function getPos(e) {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                let clientX = e.clientX;
+                let clientY = e.clientY;
+                if (e.touches && e.touches.length > 0) {
+                    clientX = e.touches[0].clientX;
+                    clientY = e.touches[0].clientY;
+                }
+                return {
+                    x: (clientX - rect.left) * scaleX,
+                    y: (clientY - rect.top) * scaleY
+                };
+            }
+
+            function scratch(e) {
+                if (!isDrawing) return;
+                e.preventDefault(); 
+                const {x, y} = getPos(e);
+                ctx.globalCompositeOperation = 'destination-out';
+                ctx.beginPath();
+                ctx.arc(x, y, 25, 0, Math.PI * 2);
+                ctx.fill();
+            }
+
+            canvas.addEventListener('mousedown', () => isDrawing = true);
+            canvas.addEventListener('mouseup', () => isDrawing = false);
+            canvas.addEventListener('mouseleave', () => isDrawing = false);
+            canvas.addEventListener('mousemove', scratch);
+            canvas.addEventListener('touchstart', (e) => { isDrawing = true; scratch(e); }, {passive: false});
+            canvas.addEventListener('touchend', () => isDrawing = false);
+            canvas.addEventListener('touchcancel', () => isDrawing = false);
+            canvas.addEventListener('touchmove', scratch, {passive: false});
+        }
+        
+        canvases.forEach(canvas => initScratch(canvas));
+
+        // Cursor Toggle (Stars vs Clouds)
+        let cursorMode = 'stars';
+        function toggleCursor() {
+            const btn = document.getElementById('cursorBtn');
+            if(cursorMode === 'stars') {
+                cursorMode = 'clouds';
+                btn.innerText = "Cursor: Clouds ☁️";
+            } else {
+                cursorMode = 'stars';
+                btn.innerText = "Cursor: Stars ✨";
+            }
+        }
+
+        function createCursorTrail(x, y) {
+            if (!isSleepMode) return;
+            const element = document.createElement('div');
+            
+            if(cursorMode === 'stars') {
+                element.className = 'star-dust';
+                element.style.left = x + 'px';
+                element.style.top = y + 'px';
+            } else {
+                element.className = 'cloud-dust';
+                element.innerText = '☁️';
+                element.style.left = (x - 10) + 'px';
+                element.style.top = (y - 10) + 'px';
+            }
+            
+            document.body.appendChild(element);
+            setTimeout(() => { element.remove(); }, 1000);
+        }
+        document.addEventListener('mousemove', (e) => createCursorTrail(e.pageX, e.pageY));
+        document.addEventListener('touchmove', (e) => {
+            if(!e.target.closest('textarea, input, select')) {
+                createCursorTrail(e.touches[0].pageX, e.touches[0].pageY);
+            }
+        }, {passive: true});
+
+        // UV FLASHLIGHT MOBILE FIX
+        function shineUV(e) {
+            const uvLight = document.getElementById('uvLight');
+            const rect = e.currentTarget.getBoundingClientRect();
+            let clientX, clientY;
+            
+            if(e.touches) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            } else {
+                clientX = e.clientX;
+                clientY = e.clientY;
+            }
+            
+            const x = ((clientX - rect.left) / rect.width) * 100;
+            const y = ((clientY - rect.top) / rect.height) * 100;
+            
+            uvLight.style.setProperty('--x', `${x}%`);
+            uvLight.style.setProperty('--y', `${y}%`);
+            uvLight.style.opacity = '1';
+        }
+
+        // Haptic Breathing Orb
+        let hapticsOn = false;
+        function toggleHaptics() {
+            hapticsOn = !hapticsOn;
+            document.getElementById('hapticBtn').innerText = hapticsOn ? "Haptics: ON 📳" : "Haptics: OFF 📴";
+            if(hapticsOn && navigator.vibrate) navigator.vibrate(50); 
+        }
+        const breatheText = document.getElementById('breatheText');
+        setInterval(() => { 
+            breatheText.innerText = breatheText.innerText === "Breathe in..." ? "Breathe out..." : "Breathe in..."; 
+            if(hapticsOn && navigator.vibrate) { navigator.vibrate([30, 100, 30, 100, 30]); }
+        }, 4000);
+
+        // WEATHER CONTROLS FIX
+        let isRaining = false;
+        let isSnowing = false;
+        let rainInterval;
+        let snowInterval;
+        const rainContainer = document.getElementById('rainContainer');
+        const snowContainer = document.getElementById('snowContainer');
+        const rainBtn = document.getElementById('rainControlBtn');
+        const snowBtn = document.getElementById('snowControlBtn');
+
+        function toggleRain() {
+            if(isSnowing) toggleSnow(); 
+            isRaining = !isRaining;
+            if (isRaining) {
+                rainContainer.style.display = 'block';
+                rainBtn.innerText = 'Rain Off 🌧️';
+                rainInterval = setInterval(() => {
+                    const drop = document.createElement('div');
+                    drop.className = 'drop';
+                    drop.style.left = Math.random() * 100 + 'vw';
+                    drop.style.animationDuration = (Math.random() * 0.5 + 0.5) + 's';
+                    rainContainer.appendChild(drop);
+                    setTimeout(() => drop.remove(), 1000);
+                }, 30); 
+            } else {
+                rainContainer.style.display = 'none';
+                rainBtn.innerText = 'Rain 🌧️';
+                clearInterval(rainInterval);
+                rainContainer.innerHTML = ''; 
+            }
+        }
+
+        function toggleSnow() {
+            if(isRaining) toggleRain(); 
+            isSnowing = !isSnowing;
+            if (isSnowing) {
+                snowContainer.style.display = 'block';
+                snowBtn.innerText = 'Snow Off ❄️';
+                snowInterval = setInterval(() => {
+                    const flake = document.createElement('div');
+                    flake.className = 'snowflake';
+                    flake.style.left = Math.random() * 100 + 'vw';
+                    flake.style.width = flake.style.height = (Math.random() * 5 + 3) + 'px';
+                    flake.style.animationDuration = (Math.random() * 3 + 2) + 's';
+                    snowContainer.appendChild(flake);
+                    setTimeout(() => flake.remove(), 5000);
+                }, 100); 
+            } else {
+                snowContainer.style.display = 'none';
+                snowBtn.innerText = 'Snow ❄️';
+                clearInterval(snowInterval);
+                snowContainer.innerHTML = ''; 
+            }
+        }
+
+        // SHOOTING STARS
+        let countTotal = 0;
+        function countItem() {
+            countTotal++;
+            document.getElementById('countTotalText').innerText = countTotal;
+            const star = document.createElement('div');
+            star.className = 'shooting-star';
+            star.style.left = (Math.random() * 50) + 'vw';
+            star.style.top = (Math.random() * 50 + 50) + 'vh';
+            document.body.appendChild(star);
+            setTimeout(() => star.remove(), 1200);
+        }
+
+        // Midnight Drawing Board 
+        const drawCvs = document.getElementById('drawCanvas');
+        const drawCtx = drawCvs.getContext('2d');
+        function resizeDrawCanvas() {
+            const rect = drawCvs.parentElement.getBoundingClientRect();
+            drawCvs.width = rect.width - 60; 
+            drawCvs.height = 250;
+        }
+        window.addEventListener('load', resizeDrawCanvas);
+        window.addEventListener('resize', resizeDrawCanvas);
+
+        let isNeonDrawing = false;
+        let lastX = 0, lastY = 0;
+
+        function getPosDraw(e) {
+            const rect = drawCvs.getBoundingClientRect();
+            const scaleX = drawCvs.width / rect.width;
+            const scaleY = drawCvs.height / rect.height;
+            let clientX = e.clientX;
+            let clientY = e.clientY;
+            if (e.touches && e.touches.length > 0) {
+                clientX = e.touches[0].clientX;
+                clientY = e.touches[0].clientY;
+            }
+            return {
+                x: (clientX - rect.left) * scaleX,
+                y: (clientY - rect.top) * scaleY
+            };
+        }
+
+        function drawNeon(e) {
+            if(!isNeonDrawing) return;
+            e.preventDefault();
+            const {x, y} = getPosDraw(e);
+
+            drawCtx.beginPath();
+            drawCtx.moveTo(lastX, lastY);
+            drawCtx.lineTo(x, y);
+            drawCtx.strokeStyle = '#d8b4fe'; // Glowing purple
+            drawCtx.lineWidth = 4;
+            drawCtx.shadowBlur = 15;
+            drawCtx.shadowColor = '#a78bfa';
+            drawCtx.lineCap = 'round';
+            drawCtx.stroke();
+
+            lastX = x;
+            lastY = y;
+        }
+
+        drawCvs.addEventListener('mousedown', (e) => {
+            isNeonDrawing = true;
+            const {x, y} = getPosDraw(e);
+            lastX = x; lastY = y;
+        });
+        drawCvs.addEventListener('mousemove', drawNeon);
+        drawCvs.addEventListener('mouseup', () => isNeonDrawing = false);
+        drawCvs.addEventListener('mouseleave', () => isNeonDrawing = false);
+        drawCvs.addEventListener('touchstart', (e) => {
+            isNeonDrawing = true;
+            e.preventDefault();
+            const {x, y} = getPosDraw(e);
+            lastX = x; lastY = y;
+        }, {passive: false});
+        drawCvs.addEventListener('touchmove', drawNeon, {passive: false});
+        drawCvs.addEventListener('touchend', () => isNeonDrawing = false);
+        drawCvs.addEventListener('touchcancel', () => isNeonDrawing = false);
+
+        setInterval(() => {
+            if(!isSleepMode) return;
+            drawCtx.fillStyle = 'rgba(7, 10, 19, 0.05)';
+            drawCtx.fillRect(0, 0, drawCvs.width, drawCvs.height);
+        }, 50);
+
+        // Weather, Time & Translator Data
+        const destData = {
+            'BALI': { lat: -8.40, lon: 115.18, tz: 'Asia/Makassar' },
+            'MALDIVES': { lat: 3.20, lon: 73.22, tz: 'Indian/Maldives' },
+            'FIJI': { lat: -17.71, lon: 178.06, tz: 'Pacific/Fiji' },
+            'ALPS': { lat: 46.81, lon: 8.22, tz: 'Europe/Zurich' },
+            'PATAGONIA': { lat: -50.33, lon: -72.26, tz: 'America/Argentina/Rio_Gallegos' },
+            'ICELAND': { lat: 64.96, lon: -19.02, tz: 'Atlantic/Reykjavik' },
+            'ROME': { lat: 41.90, lon: 12.49, tz: 'Europe/Rome' },
+            'TOKYO': { lat: 35.67, lon: 139.65, tz: 'Asia/Tokyo' },
+            'OAXACA': { lat: 17.06, lon: -96.72, tz: 'America/Mexico_City' },
+            'PARIS': { lat: 48.85, lon: 2.35, tz: 'Europe/Paris' },
+            'NEW YORK': { lat: 40.71, lon: -74.00, tz: 'America/New_York' },
+            'LONDON': { lat: 51.50, lon: -0.12, tz: 'Europe/London' },
+            'SEOUL': { lat: 37.56, lon: 126.97, tz: 'Asia/Seoul' },
+            'DUBAI': { lat: 25.20, lon: 55.27, tz: 'Asia/Dubai' },
+            'HAWAII': { lat: 21.30, lon: -157.85, tz: 'Pacific/Honolulu' },
+            'PERU': { lat: -13.16, lon: -72.54, tz: 'America/Lima' }
+        };
+
+        const langData = {
+            'BALI': { hello: 'Halo', thanks: 'Terima kasih' },
+            'MALDIVES': { hello: 'Assalaamu alaikum', thanks: 'Shukuriyaa' },
+            'FIJI': { hello: 'Bula', thanks: 'Vinaka' },
+            'ALPS': { hello: 'Grüezi', thanks: 'Danke' },
+            'PATAGONIA': { hello: 'Hola', thanks: 'Gracias' },
+            'ICELAND': { hello: 'Halló', thanks: 'Takk' },
+            'ROME': { hello: 'Ciao', thanks: 'Grazie' },
+            'TOKYO': { hello: 'Konnichiwa', thanks: 'Arigatou' },
+            'OAXACA': { hello: 'Hola', thanks: 'Gracias' },
+            'PARIS': { hello: 'Bonjour', thanks: 'Merci' },
+            'NEW YORK': { hello: 'Hello', thanks: 'Thank you' },
+            'LONDON': { hello: 'Hello', thanks: 'Cheers' },
+            'SEOUL': { hello: 'Annyeonghaseyo', thanks: 'Kamsahamnida' },
+            'DUBAI': { hello: 'Marhaba', thanks: 'Shukran' },
+            'HAWAII': { hello: 'Aloha', thanks: 'Mahalo' },
+            'PERU': { hello: 'Hola', thanks: 'Gracias' }
+        };
+
+        const destinations = {
+            relax: ['BALI', 'MALDIVES', 'FIJI', 'HAWAII'],
+            adventure: ['ALPS', 'PATAGONIA', 'ICELAND', 'PERU'],
+            food: ['ROME', 'TOKYO', 'OAXACA', 'PARIS'],
+            city: ['NEW YORK', 'LONDON', 'SEOUL', 'DUBAI']
+        };
+
+        function generateDestination(mood) {
+            const destList = destinations[mood];
+            const finalDest = destList[Math.floor(Math.random() * destList.length)];
+            const display = document.getElementById('flapperDisplay');
+            const msg = document.getElementById('flapperMessage');
+            
+            document.getElementById('flightDashboard').style.display = 'none'; 
+            display.style.display = 'flex';
+            display.innerHTML = '';
+            msg.style.opacity = '0';
+
+            for (let i = 0; i < finalDest.length; i++) {
+                const flap = document.createElement('div');
+                flap.className = 'flap';
+                flap.innerText = '-';
+                display.appendChild(flap);
+            }
+
+            const flaps = display.children;
+            const letters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ ';
+            
+            let iterations = 0;
+            const maxIterations = 20;
+            const interval = setInterval(() => {
+                for (let i = 0; i < flaps.length; i++) {
+                    if (iterations < maxIterations) {
+                        flaps[i].innerText = letters[Math.floor(Math.random() * letters.length)];
+                    } else {
+                        flaps[i].innerText = finalDest[i];
+                    }
+                }
+                iterations++;
+                
+                if (iterations > maxIterations) {
+                    clearInterval(interval);
+                    msg.innerText = `Pack your bags, we are going to ${finalDest}!`;
+                    msg.style.opacity = '1';
+                    setupFlightDashboard(finalDest);
+                }
+            }, 50);
+        }
+
+        function setupFlightDashboard(city) {
+            const dash = document.getElementById('flightDashboard');
+            const data = destData[city];
+            if(!data) return;
+
+            dash.style.display = 'block';
+
+            fetch(`https://api.open-meteo.com/v1/forecast?latitude=${data.lat}&longitude=${data.lon}&current_weather=true`)
+                .then(res => res.json())
+                .then(json => {
+                    const tempC = json.current_weather.temperature;
+                    document.getElementById('liveWeather').innerText = `${tempC}°C in ${city}`;
+                }).catch(() => document.getElementById('liveWeather').innerText = "Weather unavailable ⛅");
+
+            clearInterval(clockInterval);
+            clockInterval = setInterval(() => {
+                const now = new Date();
+                document.getElementById('homeTime').innerText = now.toLocaleTimeString('en-US', {timeZone: 'Asia/Dhaka', hour: '2-digit', minute:'2-digit'});
+                document.getElementById('destTime').innerText = now.toLocaleTimeString('en-US', {timeZone: data.tz, hour: '2-digit', minute:'2-digit'});
+            }, 1000);
+
+            const lang = langData[city];
+            if(lang) {
+                document.getElementById('translatorBox').innerHTML = `<strong>Local Language Guide:</strong><br>Hello: <em>${lang.hello}</em><br>Thank You: <em>${lang.thanks}</em>`;
+            }
+
+            const plane = document.getElementById('trackerPlane');
+            plane.style.left = '0%';
+            setTimeout(() => { plane.style.left = '90%'; }, 500); 
+        }
+
+        // Suitcase Packing Game 
+        let packedItems = 0;
+        function allowDrop(ev) { ev.preventDefault(); document.getElementById('suitcaseDrop').classList.add('drag-over'); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const draggedEl = document.getElementById(data);
+            packItemLogic(draggedEl);
+        }
+        document.getElementById('suitcaseDrop').addEventListener('dragleave', () => { document.getElementById('suitcaseDrop').classList.remove('drag-over'); });
+        function tapToPack(element) { packItemLogic(element); }
+        function packItemLogic(element) {
+            if(element.style.display === 'none') return; 
+            const suitcase = document.getElementById('suitcaseDrop');
+            suitcase.classList.remove('drag-over');
+            element.style.display = 'none'; 
+            packedItems++;
+            if(packedItems === 1) suitcase.innerText = '💼'; 
+            if(packedItems === 3) {
+                suitcase.innerText = '🛫'; 
+                document.getElementById('packingStatus').style.opacity = '1';
+            }
+        }
+
+        // Souvenir Shelf
+        function buySouvenir() {
+            const trinkets = ['🔮', '📷', '🎑', '🗿', '🏺', '🖼️', '☕', '🎭'];
+            const randomTrinket = trinkets[Math.floor(Math.random() * trinkets.length)];
+            const item = document.createElement('div');
+            item.className = 'souvenir-item';
+            item.innerText = randomTrinket;
+            document.getElementById('souvenirShelf').appendChild(item);
+        }
+
+        // Flash Camera FIX
+        function takePhoto() {
+            const overlay = document.getElementById('flashOverlay');
+            overlay.style.animation = 'none';
+            void overlay.offsetWidth; 
+            overlay.style.animation = 'flashAnim 0.8s ease-out forwards';
+
+            const gallery = document.getElementById('travelGallery');
+            const newPhoto = document.createElement('div');
+            newPhoto.className = 'masonry-item polaroid-develop';
+            const randomId = Math.floor(Math.random() * 1000);
+            
+            newPhoto.innerHTML = `
+                <img src="https://picsum.photos/500/500?random=${randomId}" alt="New Memory">
+                <div class="masonry-text">
+                    <h3>New Memory 📸</h3>
+                    <p class="dev-text" style="color: var(--accent); font-weight:bold;">Hover/Tap to develop 🪄</p>
+                </div>`;
+            
+            const developFn = function() {
+                if(newPhoto.classList.contains('polaroid-develop')) {
+                    newPhoto.classList.remove('polaroid-develop');
+                    newPhoto.classList.add('polaroid-developed');
+                    newPhoto.querySelector('.dev-text').innerText = "Memory developed! ✨";
+                }
+            };
+            
+            newPhoto.addEventListener('mouseenter', developFn);
+            newPhoto.addEventListener('touchstart', developFn, {passive: true});
+
+            gallery.insertBefore(newPhoto, gallery.firstChild);
+        }
+
+        // BUBBLE WRAP LOGIC
+        function playPop() {
+            const actx = getSysAudio();
+            const osc = actx.createOscillator();
+            const gain = actx.createGain();
+            osc.connect(gain);
+            gain.connect(actx.destination);
+            osc.type = 'sine';
+            osc.frequency.setValueAtTime(800, actx.currentTime);
+            osc.frequency.exponentialRampToValueAtTime(300, actx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.5, actx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, actx.currentTime + 0.1);
+            osc.start();
+            osc.stop(actx.currentTime + 0.1);
+        }
+
+        function createBubbles() {
+            const grid = document.getElementById('bubbleGrid');
+            grid.innerHTML = '';
+            for(let i=0; i<15; i++) {
+                const b = document.createElement('div');
+                b.className = 'bubble';
+                b.innerText = 'pop';
+                b.onclick = function() {
+                    if(!this.classList.contains('popped')) {
+                        this.classList.add('popped');
+                        playPop();
+                    }
+                };
+                grid.appendChild(b);
+            }
+        }
+        function resetBubbles() { createBubbles(); }
+        window.addEventListener('load', createBubbles); 
+
+        // Cozy Corner Interactions
+        function brewTea(element) {
+            const emoji = document.getElementById('teaEmoji');
+            const text = document.getElementById('teaText');
+            const audio = document.getElementById('teaSound');
+            audio.play().catch(e => console.log("Audio block"));
+            emoji.innerText = '☕';
+            text.innerText = "Nice and hot! ♨️";
+            text.style.color = "var(--accent)";
+            element.style.boxShadow = "0 0 20px rgba(167, 139, 250, 0.4)";
+        }
+
+        function readQuote(element) {
+            const quotes = [
+                "You're the best sister in the world!",
+                "Take a deep breath. You got this.",
+                "Always proud of how hard you work.",
+                "Rest up, big adventures ahead!",
+                "You make the world brighter. ✨"
+            ];
+            const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+            document.getElementById('bookQuote').innerText = `"${randomQuote}"`;
+            document.getElementById('bookQuote').style.color = "var(--accent)";
+        }
+
+        let isDiffusing = false;
+        let diffuserInterval;
+        function toggleDiffuser(el) {
+            const text = el.querySelector('#diffuserText');
+            const emoji = el.querySelector('#diffuserEmoji');
+            isDiffusing = !isDiffusing;
+            if(isDiffusing) {
+                text.innerText = "Diffusing lavender... 🌬️";
+                text.style.color = "var(--accent)";
+                el.style.boxShadow = "0 0 20px rgba(167, 139, 250, 0.2)";
+                diffuserInterval = setInterval(() => {
+                    const steam = document.createElement('div');
+                    steam.className = 'diffuser-steam';
+                    steam.style.left = (Math.random() * 40 + 30) + '%';
+                    steam.style.top = '10px';
+                    emoji.appendChild(steam);
+                    setTimeout(() => steam.remove(), 2000);
+                }, 400);
+            } else {
+                text.innerText = "Tap to turn on.";
+                text.style.color = "var(--text-muted)";
+                el.style.boxShadow = "0 10px 20px rgba(0,0,0,0.3)";
+                clearInterval(diffuserInterval);
+            }
+        }
+
+        let fidgetRot = 0;
+        function spinFidget(el) {
+            const emoji = el.querySelector('#fidgetEmoji');
+            const text = el.querySelector('#fidgetText');
+            fidgetRot += 1440 + Math.floor(Math.random() * 1080); 
+            emoji.style.transform = `rotate(${fidgetRot}deg)`;
+            
+            text.innerText = "Spinning...";
+            text.style.color = "var(--accent)";
+            el.style.boxShadow = "0 0 20px rgba(167, 139, 250, 0.4)";
+            
+            setTimeout(() => {
+                text.innerText = "Tap to spin.";
+                text.style.color = "var(--text-muted)";
+                el.style.boxShadow = "0 10px 20px rgba(0,0,0,0.3)";
+            }, 2500); 
+        }
+
+        function playChimes(el) {
+            const emoji = el.querySelector('#chimeEmoji');
+            if(!emoji.classList.contains('swinging')) {
+                emoji.classList.add('swinging');
+                document.getElementById('chimeSound').play().catch(e=>console.log("Audio block"));
+                setTimeout(() => emoji.classList.remove('swinging'), 2000);
+            }
+        }
+
+        let isCatSleeping = true;
+        function toggleCat() {
+            const catZzz = document.getElementById('catZzz');
+            const catStatus = document.getElementById('catStatus');
+            const meowAudio = document.getElementById('meowSound');
+            const purrAudio = document.getElementById('purrSound');
+
+            isCatSleeping = !isCatSleeping;
+            if (isCatSleeping) {
+                catZzz.style.opacity = '1';
+                catStatus.innerText = 'Purring softly...';
+                document.getElementById('catWidget').firstChild.textContent = '🐈‍⬛';
+                meowAudio.pause();
+                meowAudio.currentTime = 0;
+                purrAudio.play().catch(e => console.log("Audio block"));
+            } else {
+                catZzz.style.opacity = '0';
+                catStatus.innerText = 'Meow! Wide awake and judging you.';
+                document.getElementById('catWidget').firstChild.textContent = '🐈';
+                purrAudio.pause();
+                purrAudio.currentTime = 0;
+                meowAudio.play().catch(e => console.log("Audio block"));
+            }
+        }
+
+        function dropSnack(el) {
+            if(el) {
+                const text = el.querySelector('#snackText');
+                const emoji = el.querySelector('#snackEmoji');
+                text.innerText = "Incoming! 🍬";
+                text.style.color = "var(--accent)";
+                emoji.style.transform = 'scale(1.2) translateY(-10px)';
+                el.style.boxShadow = "0 0 20px rgba(167, 139, 250, 0.4)";
+                
+                setTimeout(() => {
+                    text.innerText = "Tap for a late-night treat.";
+                    text.style.color = "var(--text-muted)";
+                    emoji.style.transform = 'scale(1) translateY(0)';
+                    el.style.boxShadow = "0 10px 20px rgba(0,0,0,0.3)";
+                }, 1000);
+            }
+
+            const snacks = ['🍜', '🍫', '🍵', '🥐', '🍓', '🍪', '🍡'];
+            const randomSnack = snacks[Math.floor(Math.random() * snacks.length)];
+            const snackElement = document.createElement('div');
+            snackElement.innerText = randomSnack;
+            snackElement.className = 'falling-snack'; 
+            snackElement.style.left = (Math.random() * 80 + 10) + 'vw';
+            document.body.appendChild(snackElement);
+            setTimeout(() => snackElement.remove(), 3000);
+        }
+
+        // Worry Burner
+        function burnWorry() {
+            const input = document.getElementById('worryInput');
+            if(!input.value.trim()) return;
+            
+            const smoke = document.createElement('div');
+            smoke.innerText = input.value;
+            smoke.className = 'smoke-text';
+            document.getElementById('smokeContainer').appendChild(smoke);
+            
+            input.value = '';
+            setTimeout(() => smoke.remove(), 2500);
+        }
+
+        // MOBILE DOUBLE TAP DND LOCK LOGIC
+        let dndTapCount = 0;
+        let dndTapTimer;
+        function lockDND() {
+            document.getElementById('dndOverlay').style.display = 'flex';
+            updateDNDClock(); 
+        }
+        function handleDNDTap() {
+            dndTapCount++;
+            if (dndTapCount === 1) {
+                dndTapTimer = setTimeout(() => { dndTapCount = 0; }, 500);
+            } else if (dndTapCount === 2) {
+                clearTimeout(dndTapTimer);
+                document.getElementById('dndOverlay').style.display = 'none';
+                dndTapCount = 0;
+            }
+        }
+        function updateDNDClock() {
+            const now = new Date();
+            let h = now.getHours().toString().padStart(2, '0');
+            let m = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('digitalClock').innerText = `${h}:${m}`;
+        }
+        setInterval(updateDNDClock, 1000);
+
+        // Dynamic Notes
+        let notesArray = JSON.parse(localStorage.getItem('sisterNotesList')) || [];
+        function renderNotes() {
+            const container = document.getElementById('notesContainer');
+            container.innerHTML = ''; 
+            notesArray.forEach((note, index) => {
+                const noteCard = document.createElement('div');
+                noteCard.className = 'saved-note-card masonry-item'; 
+                noteCard.style.cursor = 'default';
+                noteCard.innerHTML = `
+                    <button class="delete-btn" onclick="deleteNote(${index})">✖</button>
+                    <h3 style="margin-bottom: 10px; color: var(--accent); font-family: 'Fredoka', sans-serif;">${note.title}</h3>
+                    <p style="white-space: pre-wrap; margin: 0; font-size: 0.95rem;">${note.content}</p>
+                `;
+                container.appendChild(noteCard);
+            });
+        }
+        function saveNewNote() {
+            const titleInput = document.getElementById('noteTitle');
+            const contentInput = document.getElementById('noteContent');
+            if (contentInput.value.trim() === '') {
+                alert("You gotta write something first!");
+                return;
+            }
+            const newNote = {
+                title: titleInput.value.trim() || 'Midnight Thought',
+                content: contentInput.value.trim()
+            };
+            notesArray.unshift(newNote); 
+            localStorage.setItem('sisterNotesList', JSON.stringify(notesArray));
+            titleInput.value = '';
+            contentInput.value = '';
+            renderNotes();
+        }
+        function deleteNote(index) {
+            notesArray.splice(index, 1);
+            localStorage.setItem('sisterNotesList', JSON.stringify(notesArray));
+            renderNotes();
+        }
+        window.addEventListener('load', renderNotes);
+    </script>
+</body>
+</html>
